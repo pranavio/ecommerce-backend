@@ -1,0 +1,43 @@
+package com.pranav.ecommers.user.controller;
+
+import com.pranav.ecommers.user.DTO.UserRequest;
+import com.pranav.ecommers.user.DTO.UserResponse;
+import com.pranav.ecommers.user.entity.User;
+import com.pranav.ecommers.user.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/users")
+public class UserController {
+
+    private final UserService userService;
+
+    @GetMapping
+    public ResponseEntity<List<UserResponse>>  getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
+    }
+    @PostMapping
+    public ResponseEntity<String> addUser(@RequestBody UserRequest userRequest) {
+        userService.addUser(userRequest);
+        return ResponseEntity.ok().build();
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponse> getUser(@PathVariable Long id) {
+        return userService.getUserById(id)
+                .map(user -> ResponseEntity.ok(user))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updatedUser(@PathVariable Long id, @RequestBody UserRequest updateUserRequest) {
+        boolean updated = userService.updateUser(id, updateUserRequest);
+        if(updated) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+}

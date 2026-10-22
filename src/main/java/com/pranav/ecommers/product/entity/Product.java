@@ -22,10 +22,10 @@ public class Product {
     private String name;
     private String description;
     private String category;
-    private Integer StockQuantity;
+    private Integer stockQuantity;
     private String imageUrl;
-    private BigDecimal Price;
-    private Boolean Active = true;
+    private BigDecimal price;
+    private Boolean active = true;
     @CreationTimestamp
     private LocalDateTime createdAt;
     @UpdateTimestamp

@@ -9,9 +9,12 @@ import com.pranav.ecommers.userCart.entity.CartItem;
 import com.pranav.ecommers.userCart.repository.CartItempRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
+import javax.swing.plaf.ListUI;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -63,5 +66,11 @@ public class CartService {
           return true;
       }
         return false;
+    }
+
+    public  List<CartItem> getCart(String userID) {
+        return userRepository.findById(Long.valueOf(userID))
+                .map(cartItempRepository::findByUser)
+                .orElseGet(List::of);
     }
 }

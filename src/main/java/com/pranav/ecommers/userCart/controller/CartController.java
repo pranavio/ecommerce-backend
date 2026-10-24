@@ -24,4 +24,12 @@ public class CartController {
         }
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+    @DeleteMapping("/items/{productID}")
+    public ResponseEntity<Void> removeFromCart(
+            @RequestHeader("X-User-ID") String userID,
+            @PathVariable String productID
+    ) {
+        boolean deleteted = cartService.deleteItemFromCart(userID, Long.valueOf(productID));
+        return  deleteted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    }
 }

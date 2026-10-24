@@ -7,6 +7,7 @@ import com.pranav.ecommers.user.repository.UserRepository;
 import com.pranav.ecommers.userCart.DTO.CartItemRequest;
 import com.pranav.ecommers.userCart.entity.CartItem;
 import com.pranav.ecommers.userCart.repository.CartItempRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +16,12 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class CartService {
     private final ProductRepository productRepository;
     private final CartItempRepository cartItempRepository;
     private final UserRepository userRepository;
+
     public boolean addToCart(String userID, CartItemRequest request) {
 
         Optional<Product> productOpt = productRepository.findById(request.getProductId());
@@ -50,5 +53,15 @@ public class CartService {
             cartItempRepository.save(cartItem);
         }
         return true;
+    }
+
+    public boolean deleteItemFromCart(String userID, Long productID) {
+        Optional<Product> productOpt = productRepository.findById(productID);
+        Optional<User> userOpt = userRepository.findById(Long.valueOf(userID));
+      if(productOpt.isPresent() && userOpt.isPresent()) {
+          cartItempRepository.deleteByUserAndProduct(userOpt.get(), productOpt.get());
+          return true;
+      }
+        return false;
     }
 }

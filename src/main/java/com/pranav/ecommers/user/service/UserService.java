@@ -2,10 +2,13 @@ package com.pranav.ecommers.user.service;
 
 import com.pranav.ecommers.address.Address.Address;
 import com.pranav.ecommers.address.DTO.AddressDTO;
+import com.pranav.ecommers.exception.EmailAlreadyExistsException;
 import com.pranav.ecommers.user.DTO.UserRequest;
 import com.pranav.ecommers.user.DTO.UserResponse;
 import com.pranav.ecommers.user.entity.User;
+import com.pranav.ecommers.user.entity.UserRole;
 import com.pranav.ecommers.user.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,9 +18,12 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<UserResponse> getAllUsers() {
@@ -27,8 +33,14 @@ public class UserService {
     }
 
     public void addUser(UserRequest userRequest) {
+        if(userRepository.findByEmail(userRequest.getEmail()).isPresent()) {
+            throw new EmailAlreadyExistsException("Email already registered: "  +
+                    userRequest.getEmail());
+        }
         User user = new User();
         updateUserFromRequest(user, userRequest);
+        user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+        user.setRole(UserRole.CUSTOMER);
         userRepository.save(user);
     }
 

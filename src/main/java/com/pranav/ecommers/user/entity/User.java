@@ -20,8 +20,12 @@ public class User {
     private Long id;
     private String firstname;
     private String lastname;
+    @Column(nullable = false, unique = true)
     private String email;
+    private String password;
     private String phone;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private UserRole role = UserRole.CUSTOMER;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)

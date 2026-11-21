@@ -9,4 +9,5 @@ public class LoginResponse {
     private String lastname;
     private String email;
     private String role;
+    private String accessToken;
 }

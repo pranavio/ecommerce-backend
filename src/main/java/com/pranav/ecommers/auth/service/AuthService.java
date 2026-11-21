@@ -3,6 +3,7 @@ package com.pranav.ecommers.auth.service;
 import com.pranav.ecommers.auth.DTO.LoginRequest;
 import com.pranav.ecommers.auth.DTO.LoginResponse;
 import com.pranav.ecommers.exception.InvalidCredentialsException;
+import com.pranav.ecommers.security.JwtService;
 import com.pranav.ecommers.user.entity.User;
 import com.pranav.ecommers.user.repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,16 +15,19 @@ import org.springframework.security.core.AuthenticationException;
 
 @Service
 public class AuthService {
+    private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
     public AuthService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
-                       AuthenticationManager authenticationManager) {
+                       AuthenticationManager authenticationManager,
+                        JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
     }
 
     public LoginResponse login(LoginRequest loginRequest) {
@@ -41,11 +45,13 @@ public class AuthService {
                 .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
 
         LoginResponse response = new LoginResponse();
+        String tocken = jwtService.generateToken(user.getEmail());
         response.setUserId(user.getId());
         response.setFirstname(user.getFirstname());
         response.setLastname(user.getLastname());
         response.setEmail(user.getEmail());
         response.setRole(user.getRole().name());
+        response.setAccessToken(tocken);
         return response;
 
     }

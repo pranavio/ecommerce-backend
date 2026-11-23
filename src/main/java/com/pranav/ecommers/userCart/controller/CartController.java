@@ -1,6 +1,7 @@
 package com.pranav.ecommers.userCart.controller;
 
 import com.pranav.ecommers.userCart.DTO.CartItemRequest;
+import com.pranav.ecommers.userCart.DTO.CartItemResponse;
 import com.pranav.ecommers.userCart.entity.CartItem;
 import com.pranav.ecommers.userCart.service.CartService;
 //import com.pranav.ecommers.userCart.service.cartService;
@@ -36,10 +37,18 @@ public class CartController {
         return  deleteted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 
+
     @GetMapping
-    public ResponseEntity<List<CartItem>> getCartItems(
-            @RequestHeader("X-User-ID") String userID
-    ){
-        return ResponseEntity.ok(cartService.getCart(userID));
+    public ResponseEntity<List<CartItemResponse>> getCartItems(
+            @RequestHeader("X-User-ID") String userID) {
+
+        List<CartItemResponse> cartItems =
+                cartService.getCart(userID)
+                        .stream()
+                        .map(CartItemResponse::new)
+                        .toList();
+
+        return ResponseEntity.ok(cartItems);
     }
+
 }
